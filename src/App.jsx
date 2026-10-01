@@ -169,7 +169,7 @@ function App() {
     {
       id: 'telmi',
       title: 'Telmi',
-      cover: '/images/telmi/photo_1_2026-10-01_12-00-45.jpeg',
+      cover: '/images/telmi/mockup_telmi.jpeg',
       short: lang === 'en'
         ? 'A special-needs daily-life support app with smart routines and communication tools.'
         : 'تطبيق لدعم الروتين اليومي والتواصل للأشخاص ذوي الاحتياجات الخاصة.',
@@ -177,7 +177,7 @@ function App() {
     {
       id: 'tfouki',
       title: 'Tfouki',
-      cover: '/images/tfouki/tafawwoq-educational-app-1.jpeg',
+      cover: '/images/tfouki/mockup_tfouki.jpeg',
       short: lang === 'en'
         ? 'School app designed to manage students, schedules, and academic operations efficiently.'
         : 'تطبيق تعليمي لإدارة الطلاب والجدول الدراسي والمهام الدراسية بسهولة.',
@@ -185,7 +185,7 @@ function App() {
     {
       id: 'afiete',
       title: 'Afiete',
-      cover: '/images/afiete/photo_1_2026-10-01_12-23-53.jpeg',
+      cover: '/images/afiete/mockup_afiete.jpeg',
       short: lang === 'en'
         ? 'Mental health and care platform for doctors and patients with appointments, medication tracking, and follow-ups.'
         : 'منصة صحية نفسية للرعاية الطبية للطبيب والمريض مع المواعيد وتتبّع الأدوية والمتابعة.',
