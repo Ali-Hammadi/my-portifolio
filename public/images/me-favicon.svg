@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 256 256">
+    <defs>
+        <clipPath id="avatar-circle">
+            <circle cx="128"
+                cy="128"
+                r="118" />
+        </clipPath>
+    </defs>
+    <circle cx="128"
+        cy="128"
+        r="128"
+        fill="#0f172a" />
+    <image href="/images/me.jpeg"
+        x="10"
+        y="10"
+        width="236"
+        height="236"
+        preserveAspectRatio="xMidYMid slice"
+        clip-path="url(#avatar-circle)" />
+    <circle cx="128"
+        cy="128"
+        r="118"
+        fill="none"
+        stroke="#6366f1"
+        stroke-width="8" />
+</svg>
