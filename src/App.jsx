@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const translations = {
   en: {
@@ -104,7 +104,7 @@ const socialLinks = [
 const projectCatalog = {
   telmi: {
     name: 'Telmi',
-    cover: '/images/mockup_telmi.jpeg',
+    cover: '/images/telmi/photo_1_2026-10-01_12-00-45.jpeg',
     summary: {
       en: 'A personal productivity and care platform designed to support daily routines, communication, reminders, and wellness for people with special needs, seniors, and busy families.',
       ar: 'منصة شخصية تهدف إلى تنظيم الروتين اليومي، دعم التواصل، التذكير، وتعزيز الجودة الحياتية للأشخاص ذوي الاحتياجات الخاصة وكبار السن والعائلات المشغولة.',
@@ -120,7 +120,7 @@ const projectCatalog = {
   },
   tfouki: {
     name: 'Tfouki',
-    cover: '/images/mockup_tfouki.jpeg',
+    cover: '/images/tfouki/tafawwoq-educational-app-1.jpeg',
     summary: {
       en: 'A school management mobile app created for educational institutions to streamline student administration, academic organization, schedules, and daily workflows in one clear experience.',
       ar: 'تطبيق لإدارة المدارس يساعد المؤسسات التعليمية على تنظيم الطلاب، الجدول الدراسي، والمهام اليومية في تجربة موحدة واضحة وسهلة الاستخدام.',
@@ -136,10 +136,10 @@ const projectCatalog = {
   },
   afiete: {
     name: 'Afiete',
-    cover: '/images/mockup_afiete.jpeg',
+    cover: '/images/afiete/photo_1_2026-10-01_12-23-53.jpeg',
     summary: {
-      en: 'A digital service and management solution built to simplify operations, improve organization, and accelerate daily decision-making for users and teams.',
-      ar: 'حل رقمي لإدارة الخدمات والعمليات يساعد على تنظيم العمل، تسريع اتخاذ القرار، وتحسين الإنتاجية اليومية للمستخدمين والفرق.',
+      en: 'Afiete is a mental health and healthcare platform for doctors and patients, designed to manage appointments, patient records, medication instructions, follow-ups, and treatment schedules in a clear and secure workflow.',
+      ar: 'Afiete هو نظام طبي للصحة النفسية والخدمات الصحية للمريض والطبيب، مصمم لإدارة المواعيد، ملفات المرضى، وصفات الأدوية، المتابعة، والجداول العلاجية بواجهة واضحة وآمنة.',
     },
     gallery: [
       '/images/afiete/photo_1_2026-10-01_12-23-53.jpeg',
@@ -169,7 +169,7 @@ function App() {
     {
       id: 'telmi',
       title: 'Telmi',
-      cover: '/images/mockup_telmi.jpeg',
+      cover: '/images/telmi/photo_1_2026-10-01_12-00-45.jpeg',
       short: lang === 'en'
         ? 'A special-needs daily-life support app with smart routines and communication tools.'
         : 'تطبيق لدعم الروتين اليومي والتواصل للأشخاص ذوي الاحتياجات الخاصة.',
@@ -177,7 +177,7 @@ function App() {
     {
       id: 'tfouki',
       title: 'Tfouki',
-      cover: '/images/mockup_tfouki.jpeg',
+      cover: '/images/tfouki/tafawwoq-educational-app-1.jpeg',
       short: lang === 'en'
         ? 'School app designed to manage students, schedules, and academic operations efficiently.'
         : 'تطبيق تعليمي لإدارة الطلاب والجدول الدراسي والمهام الدراسية بسهولة.',
@@ -185,14 +185,22 @@ function App() {
     {
       id: 'afiete',
       title: 'Afiete',
-      cover: '/images/mockup_afiete.jpeg',
+      cover: '/images/afiete/photo_1_2026-10-01_12-23-53.jpeg',
       short: lang === 'en'
-        ? 'Digital service app for daily operations, organization, and better workflow management.'
-        : 'تطبيق رقمي لإدارة الخدمات اليومية وتنظيم العمل والمهام بكفاءة.',
+        ? 'Mental health and care platform for doctors and patients with appointments, medication tracking, and follow-ups.'
+        : 'منصة صحية نفسية للرعاية الطبية للطبيب والمريض مع المواعيد وتتبّع الأدوية والمتابعة.',
     },
   ];
 
   const activeProject = selectedProject ? projectCatalog[selectedProject] : null;
+
+  useEffect(() => {
+    document.body.style.overflow = selectedProject ? 'hidden' : 'unset';
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedProject]);
 
   const toggleLanguage = () => {
     setLang((prev) => {
@@ -205,15 +213,28 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
     const name = formData.name.trim();
     const message = formData.message.trim();
 
     if (!name || !message) return;
 
-    setFeedbacks((prev) => [
-      { name, role: lang === 'en' ? 'User Feedback' : 'مستخدم', message },
-      ...prev,
-    ]);
+    const timestamp = new Date().toISOString();
+    const item = { name, message, role: lang === 'en' ? 'User Feedback' : 'مستخدم', timestamp };
+
+    setFeedbacks((prev) => [item, ...prev]);
+
+    try {
+      const saved = JSON.parse(localStorage.getItem('portfolio-feedbacks') || '[]');
+      localStorage.setItem('portfolio-feedbacks', JSON.stringify([item, ...saved].slice(0, 20)));
+    } catch (error) {
+      console.error('Unable to save feedback locally:', error);
+    }
+
+    const subject = encodeURIComponent(lang === 'en' ? 'Portfolio feedback' : 'ملاحظات من الموقع الشخصي');
+    const body = encodeURIComponent(`${lang === 'en' ? 'Name' : 'الاسم'}: ${name}\n${lang === 'en' ? 'Message' : 'الرسالة'}:\n${message}`);
+
+    window.location.href = `mailto:hamadea524@gmail.com?subject=${subject}&body=${body}`;
     setFormData({ name: '', message: '' });
   };
 
@@ -260,7 +281,7 @@ function App() {
                 <a href="#contact" className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-500">
                   {text.hero_btn_contact}
                 </a>
-                <a href="#cv" className="rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 font-semibold text-slate-200 transition hover:border-indigo-500 hover:text-indigo-400">
+                <a href="mailto:hamadea524@gmail.com?subject=CV%20Request" className="rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 font-semibold text-slate-200 transition hover:border-indigo-500 hover:text-indigo-400">
                   {text.hero_cv}
                 </a>
               </div>
@@ -349,11 +370,11 @@ function App() {
                   onClick={() => setSelectedProject(project.id)}
                   className="group block w-full text-left"
                 >
-                  <div className="relative overflow-hidden rounded-[28px] border border-slate-800 bg-slate-900 shadow-lg shadow-slate-950/20 transition hover:border-indigo-500/50">
+                  <div className="relative overflow-hidden rounded-[24px] border border-slate-800 bg-slate-900 shadow-lg shadow-slate-950/20 transition hover:border-indigo-500/50">
                     <img
                       src={project.cover}
                       alt={project.title}
-                      className="h-[420px] w-full object-cover transition duration-500 group-hover:scale-105"
+                      className="h-[300px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[340px] md:h-[380px]"
                     />
 
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/95 via-slate-900/70 to-transparent p-4">
@@ -425,7 +446,7 @@ function App() {
                 <i className="fa-solid fa-phone text-indigo-400"></i>
                 +963 937 472 856
               </a>
-              <a href="#cv" className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-200 transition hover:border-indigo-500 hover:text-indigo-400">
+              <a href="mailto:hamadea524@gmail.com?subject=CV%20Request" className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-200 transition hover:border-indigo-500 hover:text-indigo-400">
                 <i className="fa-solid fa-download text-indigo-400"></i>
                 {text.hero_cv}
               </a>
@@ -514,45 +535,47 @@ function App() {
       </footer>
 
       {activeProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm" onClick={() => setSelectedProject(null)}>
-          <div className="max-h-[92vh] w-full max-w-6xl overflow-auto rounded-[28px] border border-slate-700 bg-slate-900 p-4 shadow-2xl shadow-slate-950/80 md:p-6" onClick={(event) => event.stopPropagation()}>
-            <div className="mb-5 flex items-center justify-between gap-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-3 backdrop-blur-sm sm:p-4" onClick={() => setSelectedProject(null)}>
+          <div className="max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[24px] border border-slate-700 bg-slate-900 shadow-2xl shadow-slate-950/80" onClick={(event) => event.stopPropagation()}>
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-slate-800 bg-slate-900/95 px-4 py-3 backdrop-blur-sm sm:px-6">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-indigo-400">{lang === 'en' ? 'Project showcase' : 'عرض المشروع'}</p>
-                <h3 className="mt-2 text-2xl font-bold text-white">{activeProject.name}</h3>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-indigo-400">{lang === 'en' ? 'Project showcase' : 'عرض المشروع'}</p>
+                <h3 className="mt-1 text-xl font-bold text-white sm:text-2xl">{activeProject.name}</h3>
               </div>
-              <button type="button" onClick={() => setSelectedProject(null)} className="rounded-full border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-slate-200 transition hover:bg-slate-700">
+              <button type="button" onClick={() => setSelectedProject(null)} className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-slate-700 sm:px-4 sm:text-sm">
                 {text.close}
               </button>
             </div>
 
-            <div className="mb-8 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-              <div className="rounded-[28px] border border-slate-800 bg-slate-950 p-3">
-                <img src={activeProject.cover} alt={`${activeProject.name} cover`} className="h-[360px] w-full rounded-[20px] object-contain md:h-[520px]" />
-              </div>
+            <div className="p-4 sm:p-6">
+              <div className="mb-6 grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+                <div className="rounded-[22px] border border-slate-800 bg-slate-950 p-3">
+                  <img src={activeProject.cover} alt={`${activeProject.name} cover`} className="h-[240px] w-full rounded-[18px] object-cover sm:h-[300px] md:h-[360px]" />
+                </div>
 
-              <div className="rounded-[28px] border border-slate-800 bg-slate-950 p-5">
-                <p className="text-base leading-relaxed text-slate-300">{activeProject.summary[lang]}</p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {(
-                    selectedProject === 'telmi'
-                      ? ['Flutter', 'Daily Planning', 'Care Support', 'Mobile App']
-                      : selectedProject === 'tfouki'
-                        ? ['Flutter', 'Education', 'School App', 'Student Management']
-                        : ['Flutter', 'Management', 'Digital Workflow', 'UX Design']
-                  ).map((tag) => (
-                    <span key={tag} className="rounded-full border border-indigo-500/25 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">{tag}</span>
-                  ))}
+                <div className="rounded-[22px] border border-slate-800 bg-slate-950 p-5">
+                  <p className="text-sm leading-relaxed text-slate-300 sm:text-base">{activeProject.summary[lang]}</p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {(
+                      selectedProject === 'telmi'
+                        ? ['Flutter', 'Daily Planning', 'Care Support', 'Mobile App']
+                        : selectedProject === 'tfouki'
+                          ? ['Flutter', 'Education', 'School App', 'Student Management']
+                          : ['Flutter', 'Healthcare', 'Doctor Dashboard', 'Patient App']
+                    ).map((tag) => (
+                      <span key={tag} className="rounded-full border border-indigo-500/25 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">{tag}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="grid gap-5 grid-cols-1">
-              {activeProject.gallery.map((image, index) => (
-                <div key={`${activeProject.name}-${index}`} className="overflow-hidden rounded-[28px] border border-slate-800 bg-slate-950">
-                  <img src={image} alt={`${activeProject.name} screenshot ${index + 1}`} className="h-[320px] w-full object-contain md:h-[480px]" />
-                </div>
-              ))}
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {activeProject.gallery.map((image, index) => (
+                  <div key={`${activeProject.name}-${index}`} className="overflow-hidden rounded-[22px] border border-slate-800 bg-slate-950">
+                    <img src={image} alt={`${activeProject.name} screenshot ${index + 1}`} className="h-[260px] w-full object-cover sm:h-[300px]" />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
